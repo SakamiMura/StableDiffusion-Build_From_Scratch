@@ -23,7 +23,18 @@ class VAE_AttentionBlock(nn.Module):
         # (batch_size, features, height * width) -> (batch_size, height * width, features)
         x = x.transpose(-1, -2)
 
+        # (batch_size, height * width, features) -> (batch_size, height * width, features)  
         x = self.attention(x)
+
+        # (batch_size, height * width, features) -> (batch_size, features, height * width)
+        X = x.transpose(-1, -2)
+
+        # (batch_size, features, height * width) -> (batch_size, features, height, width)
+        X = X.view(n, c, h, w)
+
+        X += residue
+
+        return X
 
 class VAE_ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
